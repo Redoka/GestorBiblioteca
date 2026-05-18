@@ -129,4 +129,43 @@ function deleteUsuario(int $id): bool
     return false;
 }
 
-// ToDo: Hacer el editar y el eliminar usuario
+function updateUsuario($post): bool
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        echo "<script>alert('Error al conectarse con la base de datos');</script>";
+        return false;
+    }
+
+    $sql = "
+        UPDATE usuario
+        SET
+            dni = ?,
+            nombre = ?,
+            telefono = ?,
+            domicilio = ?,
+            email = ?,
+            usuario = ?,
+            contraseña = ?,
+            tipousuario = ?
+        WHERE id = ?
+    ";
+
+    $stmt = $PDO->prepare($sql);
+
+    $ok = $stmt->execute([
+        $post["dni"],
+        $post["nombre"],
+        $post["telefono"],     // contacto
+        $post["domicilio"],    // contacto
+        $post["email"],        // contacto
+        $post["usuario"],
+        $post["contrasena"],
+        $post["tipoUsuario"] ?? 0,
+        $post["id"]
+    ]);
+
+    return $ok;
+}

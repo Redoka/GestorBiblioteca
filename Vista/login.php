@@ -25,71 +25,10 @@ if (isset($_POST["numeroIDentificacionPersonal"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Biblioteca</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .login-container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 350px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-
-        .crear-usuario {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .crear-usuario a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .crear-usuario a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="/estilo.css">
 </head>
 
-<body>
+<body class="login-page">
 
     <div class="login-container">
         <h2>Biblioteca</h2>

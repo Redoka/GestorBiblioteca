@@ -96,6 +96,24 @@ function setHistorial(int $idLibro, int $idUser): bool
     return false;
 }
 
+function deleteRegistro(int $id): bool
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        return false;
+    }
+
+    $sql = "Delete From historiallibro where id = ?";
+    $stmt = $PDO->prepare($sql);
+    $stmt->execute([
+        $id
+    ]);
+
+    return $stmt->fetch() !== false;
+}
+
 function devolver(int $id): bool
 {
     $bdd = "biblioteca";

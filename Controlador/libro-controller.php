@@ -153,4 +153,39 @@ function deleteLibro(int $id): bool
     return $ok;
 }
 
+function updateLibro($post): bool
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        echo "<script>alert('Error al conectarse con la base de datos');</script>";
+        return false;
+    }
+
+    $sql = "
+        UPDATE libro
+        SET
+            isbn = ?,
+            titulo = ?,
+            autor = ?,
+            fechapublicacion = ?
+        WHERE id = ?
+    ";
+
+    $stmt = $PDO->prepare($sql);
+
+    return $stmt->execute([
+        $post["isbn"],
+        $post["titulo"],
+        $post["autor"],
+        $post["fechaDePublicacion"] instanceof DateTime
+            ? $post["fechaDePublicacion"]->format('Y-m-d')
+            : $post["fechaDePublicacion"],
+        $post["id"]
+    ]);
+}
+
+
+
 // ToDo: implementar update en un futuro

@@ -1,22 +1,61 @@
 <?php
-if (isset($_POST["isbn"])) {
 
-    require_once __DIR__ . "/../../Controlador/libro-controller.php";
+require_once __DIR__ . "/../../Controlador/libro-controller.php";
+require_once __DIR__ . "/../../Modelo/usuario.php";
 
-    $b = true;
-    for ($i = 0; $i < $_POST["cantidad"]; $i++) {
-        $b = setLibros($_POST);
-        if (!$b) {
-            break;
+session_start();
+$usuario = unserialize($_SESSION['usuario']);
+$admin = $usuario->tipoUsuario == 1;
+
+if (!$admin) {
+    header("Location: /Vista/tablas/tabla-libro.php");
+    exit;
+}
+
+$libro = new libro();
+$editar = $_POST['editar'] ?? false;
+$editando = false;
+if ($editar) {
+
+    $editado = $_POST['editado'] ?? false;
+    if ($editado) {
+        if (updateLibro($_POST)) {
+            echo "<script>alert('Se ha editado el libro');</script>";
+        } else {
+            echo "<script>alert('Error al editar el libro');</script>";
         }
     }
-    if ($b) {
-        echo "<script>alert('Se ha añadido el libro');</script>";
-    } else {
-        echo "<script>alert('Error al añadir el libro');</script>";
+
+    $id = $_POST['id'] ?? null;
+
+    if (!$id) {
+        die("ID no proporcionado");
     }
 
-    $_POST = [];
+    $libro = getLibrobyId($_POST);
+    $editando = isset($libro);
+
+    if ($editado) {
+        header("Location: /Vista/fichas/ficha-libro.php?id=" . urlencode($libro->id));
+        exit;
+    }
+} else {
+    if (isset($_POST["isbn"])) {
+        $b = true;
+        for ($i = 0; $i < $_POST["cantidad"]; $i++) {
+            $b = setLibros($_POST);
+            if (!$b) {
+                break;
+            }
+        }
+        if ($b) {
+            echo "<script>alert('Se ha añadido el libro');</script>";
+        } else {
+            echo "<script>alert('Error al añadir el libro');</script>";
+        }
+
+        $_POST = [];
+    }
 }
 ?>
 
@@ -28,83 +67,48 @@ if (isset($_POST["isbn"])) {
 <head>
     <meta charset="UTF-8">
     <title>Crear Libro</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            width: 380px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #007bff;
-            text-decoration: none;
-        }
-    </style>
+    <link rel="stylesheet" href="/estilo.css">
 </head>
 
 <body>
 
     <div class="container">
 
-        <h2>Crear Libro</h2>
+        <h2><?= $editando ? "Editar Libro" : "Crear Libro" ?></h2>
 
         <form action="/Vista/formularios/crear-libro.php" method="POST">
 
-            <input type="text" name="isbn" placeholder="ISBN" required>
+            <?php if ($editando): ?>
+                <input type="hidden" name="id" value="<?= $libro->id ?>">
+            <?php endif; ?>
 
-            <input type="text" name="titulo" placeholder="Título" required>
+            <input type="text" name="isbn" placeholder="ISBN"
+                value="<?= $libro->isbn ?? '' ?>" required>
 
-            <input type="text" name="autor" placeholder="Autor" required>
+            <input type="text" name="titulo" placeholder="Título"
+                value="<?= $libro->titulo ?? '' ?>" required>
 
-            <input type="date" name="fechaDePublicacion" required>
+            <input type="text" name="autor" placeholder="Autor"
+                value="<?= $libro->autor ?? '' ?>" required>
 
-            <input type="number" name="cantidad" min="1" value="1" required>
+            <input type="date" name="fechaDePublicacion"
+                value="<?= isset($libro->fechaDePublicacion) && $libro->fechaDePublicacion instanceof DateTime
+                            ? $libro->fechaDePublicacion->format('Y-m-d')
+                            : '' ?>" required>
 
-            <button type="submit">Guardar libro</button>
+            <input type="number" name="cantidad" min="1"
+                value="<?= $libro->cantidad ?? 1 ?>" required>
+
+            <?php
+            if ($editar) {
+                echo "<input type='hidden' name='editar' value='true'>";
+                echo "<input type='hidden' name='editado' value='true'>";
+            }
+            ?>
+
+            <button type="submit">
+                <?= $editando ? "Actualizar libro" : "Guardar libro" ?>
+            </button>
 
         </form>
 

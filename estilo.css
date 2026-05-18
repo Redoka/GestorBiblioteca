@@ -1,0 +1,471 @@
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+
+    background: #f6f7fb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #f6f7fb;
+    color: #1f2937;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #111827;
+    color: white;
+
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    flex-shrink: 0;
+}
+
+.sidebar h1 {
+    font-size: 20px;
+    margin: 0 0 15px;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    transition: background 0.2s ease;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+
+.content {
+    flex: 1;
+    padding: 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.card {
+    width: 100%;
+    max-width: 1100px;
+
+    background: white;
+    padding: 25px;
+
+    border-radius: 16px;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card,
+.container,
+.login-container {
+    background: white;
+
+    border-radius: 16px;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card,
+.container {
+    padding: 25px;
+}
+
+.card {
+    max-width: 1200px;
+    margin: auto;
+    overflow-x: auto;
+}
+
+.container {
+    width: 380px;
+    margin: auto;
+}
+
+.login-container {
+    width: 350px;
+    padding: 30px;
+}
+
+h1,
+.title {
+    margin-top: 0;
+    margin-bottom: 20px;
+
+    font-size: 28px;
+    font-weight: 700;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+.campo {
+    background: #f9fafb;
+
+    padding: 12px;
+
+    border-radius: 10px;
+}
+
+.label {
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.valor {
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #4f46e5;
+    color: white;
+}
+
+th,
+td {
+    padding: 14px 16px;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 14px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+
+    transition: background 0.2s ease;
+}
+
+tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+tbody tr:hover {
+    background: #f3f4f6;
+}
+
+.empty {
+    text-align: center;
+    padding: 30px;
+    color: #6b7280;
+}
+
+.badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    background: #e0e7ff;
+    color: #3730a3;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.acciones {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.acciones a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-decoration: none;
+
+    transition: all 0.2s ease;
+
+    user-select: none;
+}
+
+button {
+    width: 100%;
+
+    padding: 10px;
+
+    margin-top: 20px;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: background 0.2s ease;
+}
+
+button,
+.add-button {
+    background: #4f46e5;
+    color: white;
+}
+
+button:hover,
+.add-button:hover {
+    background: #3730a3;
+}
+
+/* SUCCESS BUTTON */
+
+.return-button {
+    background: #10b981;
+    color: white;
+}
+
+.return-button:hover {
+    background: #059669;
+}
+
+
+.delete-button {
+    background: #ef4444;
+    color: white;
+}
+
+.delete-button:hover {
+    background: #b91c1c;
+}
+
+/* COMMON ROUND BUTTONS */
+
+.add-button,
+.delete-button,
+.return-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 25px;
+    height: 25px;
+
+    border-radius: 50%;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+
+    transition: all 0.2s ease;
+
+    user-select: none;
+}
+
+.add-button {
+    font-size: 24px;
+}
+
+.delete-button {
+    font-size: 20px;
+}
+
+.return-button {
+    font-size: 18px;
+}
+
+.add-button:hover,
+.delete-button:hover,
+.return-button:hover {
+    transform: scale(1.08);
+}
+
+.add-button:active,
+.delete-button:active,
+.return-button:active,
+button:active {
+    transform: scale(0.95);
+}
+
+input,
+select {
+    width: 100%;
+
+    padding: 10px;
+
+    margin-top: 10px;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+a {
+    text-decoration: none;
+}
+
+.back {
+    display: inline-block;
+
+    margin-bottom: 15px;
+
+    color: #4f46e5;
+}
+
+.back:hover {
+    text-decoration: underline;
+}
+
+.crear-usuario,
+.login-link {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.crear-usuario a,
+.login-link a {
+    color: #007bff;
+}
+
+.crear-usuario a:hover,
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.add-container {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-bottom: 15px;
+}
+
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+
+    background: #f6f7fb;
+}
+
+.menu-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+
+    background: #f6f7fb;
+}
+
+.menu {
+    width: 300px;
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 16px;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+    text-align: center;
+}
+
+.menu h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.menu a {
+    display: block;
+
+    margin: 10px 0;
+    padding: 12px;
+
+    border-radius: 8px;
+
+    background: #4f46e5;
+    color: white;
+
+    text-decoration: none;
+    font-weight: 500;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.menu a:hover {
+    background: #3730a3;
+    transform: translateY(-2px);
+}
+
+.edit-button {
+    all: unset;
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+    background: #3b82f6;
+    color: white;
+
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background: #1d4ed8;
+    transform: scale(1.08);
+}
+
+.edit-button:active {
+    transform: scale(0.95);
+}
