@@ -7,9 +7,8 @@ session_start();
 $usuario = unserialize($_SESSION['usuario']);
 $admin = $usuario->tipoUsuario == 1;
 
-$usuario = new usuario();
+$usuario = null;
 $editar = $_POST['editar'] ?? false;
-$editando = false;
 if ($editar) {
     $editado = $_POST['editado'] ?? false;
     if ($editado) {
@@ -47,45 +46,62 @@ if ($editar) {
 
     <div class="container">
 
-        <h2>Registrar Usuario</h2>
 
-        <form action="/Vista/login.php" method="POST">
+        <?php
+        if ($editar) {
+            echo "<h2>Editar Usuario</h2>";
+            echo "<form action='/Vista/formularios/crear-usuario.php' method='POST'>";
+        } else {
+            echo "<h2>Registrar Usuario</h2>";
+            echo "<form action='/Vista/login.php' method='POST'>";
+        }
+        ?>
+        <input type="hidden" name="id" value="<?= $usuario->id ?? '' ?>">
 
-            <input type="hidden" name="id" value="<?= $usuario->id ?? '' ?>">
+        <input type="text" name="dni"
+            placeholder="Nº Identificación"
+            value="<?= $usuario->dni ?? '' ?>"
+            required>
 
-            <input type="text" name="numeroIDentificacionPersonal"
-                placeholder="Nº Identificación"
-                value="<?= $usuario->dni ?? '' ?>"
-                required>
+        <input type="text" name="nombre"
+            placeholder="Nombre completo"
+            value="<?= $usuario->nombre ?? '' ?>"
+            required>
 
-            <input type="text" name="nombre"
-                placeholder="Nombre completo"
-                value="<?= $usuario->nombre ?? '' ?>"
-                required>
+        <input type="text" name="telefono"
+            placeholder="Teléfono o contacto"
+            value="<?= $usuario->contacto->telefono ?? '' ?>"
+            required>
 
-            <input type="text" name="telefono"
-                placeholder="Teléfono o contacto"
-                value="<?= $usuario->contacto->telefono ?? '' ?>"
-                required>
+        <input type="text" name="usuario"
+            placeholder="Usuario"
+            value="<?= $usuario->usuario ?? '' ?>"
+            required>
 
-            <input type="text" name="usuario"
-                placeholder="Usuario"
-                value="<?= $usuario->usuario ?? '' ?>"
-                required>
+        <input type="text" name="contrasena"
+            placeholder="Contraseña"
+            value="<?= $usuario->contraseña ?? '' ?>"
+            required>
 
-            <input type="text" name="contrasena"
-                placeholder="Contraseña"
-                value="<?= $usuario->contraseña ?? '' ?>"
-                required>
+        <?php
+        if ($editar) {
+            echo "<input type='hidden' name='id' value='{$usuario->id}'>
+                  <input type='hidden' name='editar' value='true'>
+                  <input type='hidden' name='editado' value='true'>";
+        } else {
+             echo "<input type='hidden' name='registrar' value='true'>";
+        }
+        ?>
 
-            <button type="submit">
-                <?= isset($usuario) ? 'Guardar cambios' : 'Registrar' ?>
-            </button>
+
+        <button type="submit">
+            <?= isset($usuario) ? 'Guardar cambios' : 'Registrar' ?>
+        </button>
 
         </form>
 
         <?php
-        if ($editar) {
+        if (!$editar) {
             echo "<div class='login-link'>
                         <a href='/Vista/login.php'>Ya tengo cuenta</a>
                      </div>";

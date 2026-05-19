@@ -5,24 +5,33 @@ class usuario
     public int $id;
     public string $dni;
     public string $nombre;
-    public contacto $contacto;
+    public ?contacto $contacto = null;
     public string $usuario;
     public string $contraseña;
+    public string $fechaNacimiento;
     public int $tipoUsuario;
 
-    public function __contruct(int $id, string $dni, string $nombre, contacto $contacto, string $usuario, string $contraseña, int $tipoUsuario)
-    {
-
+    public function __construct(
+        int $id = 0,
+        string $dni = "",
+        string $nombre = "",
+        ?contacto $contacto = null,
+        string $usuario = "",
+        string $contraseña = "",
+        string $fechaNacimiento = "",
+        int $tipoUsuario = 0
+    ) {
         $this->id = $id;
         $this->dni = $dni;
         $this->nombre = $nombre;
         $this->contacto = $contacto;
         $this->usuario = $usuario;
         $this->contraseña = $contraseña;
+        $this->fechaNacimiento = $fechaNacimiento;
         $this->tipoUsuario = $tipoUsuario;
     }
 
-    public static function crear(int $id, string $dni, string $nombre, contacto $contacto, string $usuario, string $contraseña, int $tipoUsuario): Usuario
+    public static function crear(int $id, string $dni, string $nombre, contacto $contacto, string $usuario, string $contraseña,string $fechaNacimiento, int $tipoUsuario): Usuario
     {
         return new Usuario(
             $id,
@@ -31,6 +40,7 @@ class usuario
             $contacto,
             $usuario,
             $contraseña,
+            $fechaNacimiento,
             $tipoUsuario
         );
     }

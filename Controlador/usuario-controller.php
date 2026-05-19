@@ -31,15 +31,45 @@ function getUsuariobyId($post): ?usuario
         return null;
     }
 
-    $sql = "SELECT id, dni, nombre, telefono, domicilio, email, usuario, contraseña, tipousuario as tipoUsuario 
-            FROM usuario WHERE id = ?";
+    $sql = "SELECT 
+                id,
+                dni,
+                nombre,
+                telefono,
+                domicilio,
+                email,
+                usuario,
+                contraseña,
+                tipousuario AS tipoUsuario
+            FROM usuario
+            WHERE id = ?";
+
     $stmt = $PDO->prepare($sql);
     $stmt->execute([$post['id']]);
 
-    $stmt->setFetchMode(PDO::FETCH_CLASS, usuario::class);
-    $usuario = $stmt->fetch();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $usuario ?: null;
+    if (!$row) {
+        return null;
+    }
+
+    $contacto = new contacto(
+        $row['telefono'],
+        $row['domicilio'],
+        $row['email']
+    );
+
+    $usuario = new usuario();
+
+    $usuario->id = $row['id'];
+    $usuario->dni = $row['dni'];
+    $usuario->nombre = $row['nombre'];
+    $usuario->contacto = $contacto;
+    $usuario->usuario = $row['usuario'];
+    $usuario->contraseña = $row['contraseña'];
+    $usuario->tipoUsuario = $row['tipoUsuario'];
+
+    return $usuario;
 }
 
 function getLogin($post): bool
@@ -75,18 +105,34 @@ function getUsuarioByLogin($post): ?usuario
     }
 
     $sql = "SELECT id, dni, nombre, telefono, domicilio, email, usuario, contraseña, tipousuario as tipoUsuario 
-            FROM usuario WHERE usuario = ? and contraseña = ? LIMIT 1";
+            FROM usuario 
+            WHERE usuario = ? AND contraseña = ? 
+            LIMIT 1";
+
     $stmt = $PDO->prepare($sql);
     $stmt->execute([$post['usuario'], $post['password']]);
 
-    $stmt->setFetchMode(PDO::FETCH_CLASS, usuario::class);
-    $usuario = $stmt->fetch();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$usuario) {
+    if (!$row) {
         return null;
     }
 
-    return $usuario;
+    $u = new usuario(
+        (int)$row['id'],
+        $row['dni'],
+        $row['nombre'],
+        new contacto(
+            $row['telefono'],
+            $row['domicilio'],
+            $row['email']
+        ),
+        $row['usuario'],
+        $row['contraseña'],
+        (int)$row['tipoUsuario']
+    );
+
+    return $u;
 }
 
 function setUsuario($post): bool
@@ -98,7 +144,7 @@ function setUsuario($post): bool
 
         $sql = "INSERT INTO usuario (dni, nombre, telefono, usuario, contraseña, tipoUsuario
                 ) VALUES (
-                \"{$post['numeroIDentificacionPersonal']}\", \"{$post['nombre']}\", \"{$post['telefono']}\", \"{$post['usuario']}\",
+                \"{$post['dni']}\", \"{$post['nombre']}\", \"{$post['telefono']}\", \"{$post['usuario']}\",
                 \"" . $post['contrasena'] . "\",0)";
 
         $stmt = $PDO->prepare($sql);

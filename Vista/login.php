@@ -1,5 +1,5 @@
 <?php
-if (isset($_POST["numeroIDentificacionPersonal"])) {
+if (isset($_POST["registrar"])) {
     require_once __DIR__ . "/../Controlador/usuario-controller.php";
 
 

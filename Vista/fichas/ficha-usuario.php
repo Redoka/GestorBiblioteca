@@ -3,12 +3,15 @@ require_once __DIR__ . "/../../Modelo/usuario.php";
 require_once __DIR__ . "/../../Controlador/usuario-controller.php";
 
 $id = $_GET['id'] ?? null;
-$usuario = new usuario();
+$usuario = null;
 session_start();
 $usuario = unserialize($_SESSION['usuario']);
 $admin = $usuario->tipoUsuario == 1;
 if ($id) {
-  $usuario = updateUsuario($_GET);
+  $usuario = getUsuariobyId($_GET);
+}else{
+  $_GET['id'] = $usuario->id;
+  $usuario = getUsuariobyId($_GET);
 }
 ?>
 
@@ -46,12 +49,12 @@ if ($id) {
 
         <div class="add-container">
           <form action='/Vista/formularios/crear-usuario.php' method='POST' style='display:flex;margin-right: 5px;'>
-            <input type='hidden' name='id' value='{$usuario->id}'>
+            <input type='hidden' name='id' value='<?php echo $usuario->id; ?>'>
             <input type='hidden' name='editar' value='true'>
             <button type='submit' class='edit-button'>✎</button>
           </form>
 
-                    
+
 
           <?php
           if ($admin) {
@@ -91,7 +94,9 @@ if ($id) {
 
           <div class="campo">
             <div class="label">Telefono</div>
-            <?php echo "<div class=\"valor\"> $usuario->telefono </div>" ?>
+            <div class="valor">
+              <?= $usuario->contacto?->telefono ?? '' ?>
+            </div>
           </div>
 
         </div>
