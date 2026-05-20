@@ -21,15 +21,8 @@ function getLibros(): array
 
     foreach ($rows as $row) {
 
-        $libro = new libro();
 
-        $libro->id = (int) $row['id'];
-        $libro->isbn = $row['isbn'];
-        $libro->titulo = $row['titulo'];
-        $libro->autor = $row['autor'];
-
-        $libro->fechaDePublicacion = new DateTime($row['fechapublicacion']);
-
+        $libro = new libro($row['id'], $row['isbn'], $row['titulo'], $row['autor'], new DateTime($row['fechapublicacion']), "");
         $libros[] = $libro;
     }
 
@@ -56,15 +49,7 @@ function getLibrosDisponibles(): array
 
     foreach ($rows as $row) {
 
-        $libro = new libro();
-
-        $libro->id = (int) $row['id'];
-        $libro->isbn = $row['isbn'];
-        $libro->titulo = $row['titulo'];
-        $libro->autor = $row['autor'];
-
-        $libro->fechaDePublicacion = new DateTime($row['fechapublicacion']);
-
+        $libro = new libro($row['id'], $row['isbn'], $row['titulo'], $row['autor'], new DateTime($row['fechapublicacion']), "");
         $libros[] = $libro;
     }
 
@@ -81,7 +66,7 @@ function getLibrobyId($post): libro
         die();
     }
 
-    $sql = "SELECT id, isbn, titulo, autor, fechapublicacion
+    $sql = "SELECT id, isbn, titulo, autor, fechapublicacion, descripcion
             FROM libro
             WHERE id = ?";
 
@@ -93,13 +78,7 @@ function getLibrobyId($post): libro
 
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $libro = new libro();
-
-    $libro->id = (int) $row['id'];
-    $libro->isbn = $row['isbn'];
-    $libro->titulo = $row['titulo'];
-    $libro->autor = $row['autor'];
-    $libro->fechaDePublicacion = new DateTime($row['fechapublicacion']);
+    $libro = new libro($row['id'], $row['isbn'], $row['titulo'], $row['autor'], new DateTime($row['fechapublicacion']), $row['descripcion']);
 
     return $libro;
 }
@@ -115,8 +94,8 @@ function setLibros($post): bool
         return false;
     }
 
-    $sql = "INSERT INTO libro (isbn, titulo, autor, fechapublicacion)
-            VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO libro (isbn, titulo, autor, fechapublicacion, descripcion)
+            VALUES (?, ?, ?, ?, ?)";
 
     $stmt = $PDO->prepare($sql);
 
@@ -126,7 +105,8 @@ function setLibros($post): bool
         $post["autor"],
         $post["fechaDePublicacion"] instanceof DateTime
             ? $post["fechaDePublicacion"]->format('Y-m-d')
-            : $post["fechaDePublicacion"]
+            : $post["fechaDePublicacion"],
+        $post['descripcion']
     ]);
 
     return $ok;
@@ -153,6 +133,21 @@ function deleteLibro(int $id): bool
     return $ok;
 }
 
+function descatalogarLibro(int $id): bool
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        echo "<script>alert('Error al conectarse con la base de datos');</script>";
+        return false;
+    }
+    $sql = "INSERT INTO descatalogado(idlibro) VALUES (?)";
+    $stmt = $PDO->prepare($sql);
+    $ok = $stmt->execute([$id]);
+    return $ok;
+}
+
 function updateLibro($post): bool
 {
     $bdd = "biblioteca";
@@ -169,7 +164,8 @@ function updateLibro($post): bool
             isbn = ?,
             titulo = ?,
             autor = ?,
-            fechapublicacion = ?
+            fechapublicacion = ?,
+            descripcion = ?
         WHERE id = ?
     ";
 
@@ -182,10 +178,7 @@ function updateLibro($post): bool
         $post["fechaDePublicacion"] instanceof DateTime
             ? $post["fechaDePublicacion"]->format('Y-m-d')
             : $post["fechaDePublicacion"],
+        $post['descripcion'],
         $post["id"]
     ]);
 }
-
-
-
-// ToDo: implementar update en un futuro

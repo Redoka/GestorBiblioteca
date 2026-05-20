@@ -73,6 +73,20 @@ if ($editar) {
             value="<?= $usuario->contacto->telefono ?? '' ?>"
             required>
 
+        <input
+            type="text"
+            name="domicilio"
+            placeholder="Domicilio"
+            value="<?= $usuario->contacto?->domicilio ?? '' ?>"
+            required>
+
+        <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            value="<?= $usuario->contacto?->email ?? '' ?>"
+            required>
+
         <input type="text" name="usuario"
             placeholder="Usuario"
             value="<?= $usuario->usuario ?? '' ?>"
@@ -83,13 +97,20 @@ if ($editar) {
             value="<?= $usuario->contraseña ?? '' ?>"
             required>
 
+        <input
+            type="date"
+            name="fechaNacimiento"
+            value="<?= isset($usuario->fechaNacimiento) && $usuario->fechaNacimiento instanceof DateTime
+                        ? $usuario->fechaNacimiento->format('Y-m-d')
+                        : '' ?>">
+
         <?php
         if ($editar) {
             echo "<input type='hidden' name='id' value='{$usuario->id}'>
                   <input type='hidden' name='editar' value='true'>
                   <input type='hidden' name='editado' value='true'>";
         } else {
-             echo "<input type='hidden' name='registrar' value='true'>";
+            echo "<input type='hidden' name='registrar' value='true'>";
         }
         ?>
 

@@ -6,17 +6,44 @@ require_once __DIR__ . "/../Modelo/usuario.php";
 
 function getUsuarios(): array
 {
-    $usuarios = array();
+    $usuarios = [];
     $bdd = "biblioteca";
     $PDO = conectarDB($bdd);
 
-    if (!is_null($PDO)) {
-
-        $sql = "select id, dni, nombre, telefono, domicilio, email, usuario, contraseña, tipousuario as tipoUsuario 
-                from usuario";
-        $usuarios = $PDO->query($sql)->fetchAll(PDO::FETCH_CLASS, usuario::class);
-    } else {
+    if (is_null($PDO)) {
         echo "<script>alert('Error al conectarse con la base de datos');</script>";
+        return [];
+    }
+
+    $sql = "SELECT id, dni, nombre, telefono, domicilio, email, usuario, contraseña, 
+                   fechanacimiento, tipousuario as tipoUsuario 
+            FROM usuario";
+
+    $stmt = $PDO->query($sql);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($rows as $row) {
+
+        $fechaNacimiento = !empty($row['fechanacimiento'])
+            ? new DateTime($row['fechanacimiento'])
+            : null;
+
+        $contacto = new contacto(
+            $row['telefono'],
+            $row['domicilio'],
+            $row['email']
+        );
+
+        $usuarios[] = new usuario(
+            (int)$row['id'],
+            $row['dni'],
+            $row['nombre'],
+            $contacto,
+            $row['usuario'],
+            $row['contraseña'],
+            $fechaNacimiento,
+            (int)$row['tipoUsuario']
+        );
     }
 
     return $usuarios;
@@ -40,7 +67,8 @@ function getUsuariobyId($post): ?usuario
                 email,
                 usuario,
                 contraseña,
-                tipousuario AS tipoUsuario
+                tipousuario AS tipoUsuario,
+                fechanacimiento
             FROM usuario
             WHERE id = ?";
 
@@ -59,15 +87,20 @@ function getUsuariobyId($post): ?usuario
         $row['email']
     );
 
-    $usuario = new usuario();
+    $fechaNacimiento = !empty($row['fechanacimiento'])
+        ? new DateTime($row['fechanacimiento'])
+        : null;
 
-    $usuario->id = $row['id'];
-    $usuario->dni = $row['dni'];
-    $usuario->nombre = $row['nombre'];
-    $usuario->contacto = $contacto;
-    $usuario->usuario = $row['usuario'];
-    $usuario->contraseña = $row['contraseña'];
-    $usuario->tipoUsuario = $row['tipoUsuario'];
+    $usuario = new usuario(
+        $row['id'],
+        $row['dni'],
+        $row['nombre'],
+        $contacto,
+        $row['usuario'],
+        $row['contraseña'],
+        $fechaNacimiento,
+        $row['tipoUsuario']
+    );
 
     return $usuario;
 }
@@ -104,7 +137,7 @@ function getUsuarioByLogin($post): ?usuario
         return null;
     }
 
-    $sql = "SELECT id, dni, nombre, telefono, domicilio, email, usuario, contraseña, tipousuario as tipoUsuario 
+    $sql = "SELECT id, dni, nombre, telefono, domicilio, email, usuario, contraseña, fechanacimiento,tipousuario as tipoUsuario 
             FROM usuario 
             WHERE usuario = ? AND contraseña = ? 
             LIMIT 1";
@@ -118,6 +151,11 @@ function getUsuarioByLogin($post): ?usuario
         return null;
     }
 
+    $fechaNacimiento = !empty($row['fechanacimiento'])
+        ? new DateTime($row['fechanacimiento'])
+        : null;
+
+
     $u = new usuario(
         (int)$row['id'],
         $row['dni'],
@@ -129,6 +167,7 @@ function getUsuarioByLogin($post): ?usuario
         ),
         $row['usuario'],
         $row['contraseña'],
+        $fechaNacimiento,
         (int)$row['tipoUsuario']
     );
 
@@ -145,7 +184,7 @@ function setUsuario($post): bool
         $sql = "INSERT INTO usuario (dni, nombre, telefono, usuario, contraseña, tipoUsuario
                 ) VALUES (
                 \"{$post['dni']}\", \"{$post['nombre']}\", \"{$post['telefono']}\", \"{$post['usuario']}\",
-                \"" . $post['contrasena'] . "\",0)";
+                \"" . $post['contrasena'] . "\", \"" . $post['fechaNacimiento'] . "\",0)";
 
         $stmt = $PDO->prepare($sql);
 
@@ -164,7 +203,7 @@ function deleteUsuario(int $id): bool
     if (!is_null($PDO)) {
 
         $sql = "Update usuario set dni = '', nombre = '', telefono = '', domicilio = '', email = '', 
-        usuario = '', contraseña = '', tipousuario = 0 where id = " . $id;
+        usuario = '', contraseña = '' where id = " . $id;
 
         $stmt = $PDO->prepare($sql);
 
@@ -195,6 +234,7 @@ function updateUsuario($post): bool
             email = ?,
             usuario = ?,
             contraseña = ?,
+            fechanacimiento = ?,
             tipousuario = ?
         WHERE id = ?
     ";
@@ -209,6 +249,7 @@ function updateUsuario($post): bool
         $post["email"],        // contacto
         $post["usuario"],
         $post["contrasena"],
+        $post["fechaNacimiento"],
         $post["tipoUsuario"] ?? 0,
         $post["id"]
     ]);

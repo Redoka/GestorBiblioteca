@@ -76,7 +76,7 @@ if (isset($_GET['deleted'])) {
                                             <?php
 
                                             if ($admin) {
-                                                echo "<a class=\"delete-button\" href=\"/intermedio/deleted-history.php?id=$libro->id\">×</a>";
+                                                echo "<a class=\"delete-button\" href=\"/intermedio/deleted.php?id=$libro->id\">×</a>";
                                                 echo "<form action='/Vista/formularios/crear-libro.php' method='POST' style='display:flex;'>
                                                             <input type='hidden' name='id' value='{$libro->id}'>
                                                              <input type='hidden' name='editar' value='true'>

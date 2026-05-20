@@ -9,7 +9,7 @@ $usuario = unserialize($_SESSION['usuario']);
 $admin = $usuario->tipoUsuario == 1;
 if ($id) {
   $usuario = getUsuariobyId($_GET);
-}else{
+} else {
   $_GET['id'] = $usuario->id;
   $usuario = getUsuariobyId($_GET);
 }
@@ -45,8 +45,6 @@ if ($id) {
 
       <div class="card">
 
-        <a class="back" href="javascript:history.back()">← Volver</a>
-
         <div class="add-container">
           <form action='/Vista/formularios/crear-usuario.php' method='POST' style='display:flex;margin-right: 5px;'>
             <input type='hidden' name='id' value='<?php echo $usuario->id; ?>'>
@@ -62,9 +60,6 @@ if ($id) {
           } else {
             echo "<a class=\"delete-button\" href=\"/intermedio/deleted-user.php?id=$usuario->id&usuario=0\">×</a>";
           }
-
-
-
           ?>
         </div>
 
@@ -96,6 +91,30 @@ if ($id) {
             <div class="label">Telefono</div>
             <div class="valor">
               <?= $usuario->contacto?->telefono ?? '' ?>
+            </div>
+          </div>
+
+          <div class="campo">
+            <div class="label">email</div>
+            <div class="valor">
+              <?= $usuario->contacto?->email ?? '' ?>
+            </div>
+          </div>
+
+          <div class="campo">
+            <div class="label">Dirección</div>
+            <div class="valor">
+              <?= $usuario->contacto?->domicilio ?? '' ?>
+            </div>
+          </div>
+
+          <div class="campo">
+            <div class="label">Fecha de Nacimiento</div>
+            <div class="valor">
+              <?= $usuario->fechaNacimiento instanceof DateTime
+                ? $usuario->fechaNacimiento->format('d-m-Y')
+                : $usuario->fechaNacimiento
+              ?>
             </div>
           </div>
 

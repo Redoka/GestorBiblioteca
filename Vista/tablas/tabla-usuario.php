@@ -43,6 +43,10 @@ $usuarios = getUsuarios();
                             <th>DNI</th>
                             <th>Nombre</th>
                             <th>Usuario</th>
+
+                            <th>fecha de Nacimiento</th>
+                            <th>direccion</th>
+                            <th>email</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,6 +61,11 @@ $usuarios = getUsuarios();
                                     <td><?= $usuario->dni ?></td>
                                     <td><?= $usuario->nombre ?></td>
                                     <td><?= $usuario->usuario ?></td>
+                                    <td><?= $usuario->fechaNacimiento instanceof DateTime
+                                            ? $usuario->fechaNacimiento->format('d-m-Y')
+                                            : $usuario->fechaNacimiento ?></td>
+                                    <td><?= $usuario->contacto->domicilio ?></td>
+                                    <td><?= $usuario->contacto->email ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>

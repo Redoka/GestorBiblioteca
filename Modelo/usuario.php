@@ -8,7 +8,7 @@ class usuario
     public ?contacto $contacto = null;
     public string $usuario;
     public string $contraseña;
-    public string $fechaNacimiento;
+    public ?DateTime $fechaNacimiento;
     public int $tipoUsuario;
 
     public function __construct(
@@ -18,7 +18,7 @@ class usuario
         ?contacto $contacto = null,
         string $usuario = "",
         string $contraseña = "",
-        string $fechaNacimiento = "",
+        ?DateTime $fechaNacimiento = null,
         int $tipoUsuario = 0
     ) {
         $this->id = $id;
@@ -31,7 +31,7 @@ class usuario
         $this->tipoUsuario = $tipoUsuario;
     }
 
-    public static function crear(int $id, string $dni, string $nombre, contacto $contacto, string $usuario, string $contraseña,string $fechaNacimiento, int $tipoUsuario): Usuario
+    public static function crear(int $id, string $dni, string $nombre, contacto $contacto, string $usuario, string $contraseña, ?DateTime $fechaNacimiento, int $tipoUsuario): Usuario
     {
         return new Usuario(
             $id,

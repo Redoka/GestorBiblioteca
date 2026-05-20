@@ -91,6 +91,9 @@ if ($editar) {
             <input type="text" name="autor" placeholder="Autor"
                 value="<?= $libro->autor ?? '' ?>" required>
 
+            <input type="text" name="descripcion" placeholder="Descripcion"
+                value="<?= $libro->descripcion ?? '' ?>">
+
             <input type="date" name="fechaDePublicacion"
                 value="<?= isset($libro->fechaDePublicacion) && $libro->fechaDePublicacion instanceof DateTime
                             ? $libro->fechaDePublicacion->format('Y-m-d')
