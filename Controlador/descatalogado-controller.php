@@ -1,9 +1,9 @@
 <?php
 require_once("baseDatos.php");
-require_once __DIR__ . "/../Modelo/descatalogado.php";
+require_once __DIR__ . "/../modelo/descatalogado.php";
 
 
-function getDescatalogados(): array
+function getDescatalogados(int $limit, int $offset): array
 {
     $descatalogados = [];
     $bdd = "biblioteca";
@@ -16,7 +16,8 @@ function getDescatalogados(): array
 
     $sql = "SELECT d.id, l.id as idLibro, l.isbn, l.titulo, l.autor, l.fechapublicacion  
                     FROM descatalogado d
-            Inner Join libro l On l.id = d.idlibro";
+            Inner Join libro l On l.id = d.idlibro
+            LIMIT {$limit} OFFSET {$offset}";
 
     $stmt = $PDO->query($sql);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -54,4 +55,18 @@ function deleteDescatalogado(int $id): bool
     ]);
 
     return $ok;
+}
+
+function countDescatalogado(): int
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        return 0;
+    }
+
+    $sql = "SELECT COUNT(*) FROM descatalogado";
+
+    return (int)$PDO->query($sql)->fetchColumn();
 }

@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . "/../Controlador/descatalogado-controller.php";
-$id = (int)$_GET['id'];
+require_once __DIR__ . "/../controlador/descatalogado-controller.php";
+$id = $_POST['id'];
 
 deleteDescatalogado($id);
 
 // rediriges con mensaje
- header("Location: /Vista/tablas/descatalogado.php");
+ header("Location: /vista/tablas/descatalogado.php");
 exit;

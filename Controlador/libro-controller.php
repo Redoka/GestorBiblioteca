@@ -1,10 +1,12 @@
 <?php
 require_once("baseDatos.php");
-require_once __DIR__ . "/../Modelo/libro.php";
+require_once("categoria-controller.php");
+require_once __DIR__ . "/../modelo/libro.php";
 
-function getLibros(): array
+function getLibros(int $limit, int $offset): array
 {
     $libros = [];
+
     $bdd = "biblioteca";
     $PDO = conectarDB($bdd);
 
@@ -13,25 +15,42 @@ function getLibros(): array
         return [];
     }
 
-    $sql = "SELECT id, isbn, titulo, autor, fechapublicacion
-            FROM libro";
+    $sql = "SELECT l.id, l.isbn, l.titulo, l.autor, l.fechapublicacion
+        FROM libro l
+        LEFT JOIN descatalogado d ON d.idlibro = l.id
+        WHERE d.idlibro IS NULL
+        LIMIT ? OFFSET ?";
 
-    $stmt = $PDO->query($sql);
+    $stmt = $PDO->prepare($sql);
+
+    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+
+    $stmt->execute();
+
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($rows as $row) {
 
+        $libro = new libro(
+            $row['id'],
+            $row['isbn'],
+            $row['titulo'],
+            $row['autor'],
+            new DateTime($row['fechapublicacion']),
+            ""
+        );
 
-        $libro = new libro($row['id'], $row['isbn'], $row['titulo'], $row['autor'], new DateTime($row['fechapublicacion']), "");
         $libros[] = $libro;
     }
 
     return $libros;
 }
 
-function getLibrosDisponibles(): array
+function getLibrosDisponibles(int $limit, int $offset): array
 {
     $libros = [];
+
     $bdd = "biblioteca";
     $PDO = conectarDB($bdd);
 
@@ -40,16 +59,34 @@ function getLibrosDisponibles(): array
         return [];
     }
 
-    $sql = "SELECT id, isbn, titulo, autor, fechapublicacion
-            FROM  libro 
-            WHERE id not in ( SELECT idlibro From historiallibro where fechaentrega is null)";
+    $sql = "SELECT DISTINCT l.id, l.isbn, l.titulo, l.autor, l.fechapublicacion
+        FROM libro l
+        LEFT JOIN descatalogado d ON d.idlibro = l.id
+        LEFT JOIN historiallibro h ON h.idlibro = l.id AND h.fechaentrega IS NULL
+        WHERE d.idlibro IS NULL
+          AND h.idlibro IS NULL
+        LIMIT ? OFFSET ?";
 
-    $stmt = $PDO->query($sql);
+    $stmt = $PDO->prepare($sql);
+
+    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+
+    $stmt->execute();
+
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($rows as $row) {
 
-        $libro = new libro($row['id'], $row['isbn'], $row['titulo'], $row['autor'], new DateTime($row['fechapublicacion']), "");
+        $libro = new libro(
+            $row['id'],
+            $row['isbn'],
+            $row['titulo'],
+            $row['autor'],
+            new DateTime($row['fechapublicacion']),
+            ""
+        );
+
         $libros[] = $libro;
     }
 
@@ -106,7 +143,7 @@ function setLibros($post): bool
         $post["fechaDePublicacion"] instanceof DateTime
             ? $post["fechaDePublicacion"]->format('Y-m-d')
             : $post["fechaDePublicacion"],
-        $post['descripcion']
+        $post["descripcion"]
     ]);
 
     return $ok;
@@ -158,27 +195,71 @@ function updateLibro($post): bool
         return false;
     }
 
-    $sql = "
-        UPDATE libro
-        SET
-            isbn = ?,
-            titulo = ?,
-            autor = ?,
-            fechapublicacion = ?,
-            descripcion = ?
-        WHERE id = ?
-    ";
+    try {
+        $PDO->beginTransaction();
+        $sql = "
+            UPDATE libro
+            SET
+                isbn = ?,
+                titulo = ?,
+                autor = ?,
+                fechapublicacion = ?,
+                descripcion = ?
+            WHERE id = ?
+        ";
 
-    $stmt = $PDO->prepare($sql);
+        $stmt = $PDO->prepare($sql);
 
-    return $stmt->execute([
-        $post["isbn"],
-        $post["titulo"],
-        $post["autor"],
-        $post["fechaDePublicacion"] instanceof DateTime
-            ? $post["fechaDePublicacion"]->format('Y-m-d')
-            : $post["fechaDePublicacion"],
-        $post['descripcion'],
-        $post["id"]
-    ]);
+        $stmt->execute([
+            $post["isbn"],
+            $post["titulo"],
+            $post["autor"],
+            $post["fechaDePublicacion"] instanceof DateTime
+                ? $post["fechaDePublicacion"]->format('Y-m-d')
+                : $post["fechaDePublicacion"],
+            $post["descripcion"],
+            $post["id"]
+        ]);
+
+        $PDO->commit();
+        return true;
+    } catch (Exception $e) {
+        $PDO->rollBack();
+        return false;
+    }
+}
+
+function countLibros(): int
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        return 0;
+    }
+
+    $sql = "SELECT COUNT(l.id) FROM libro l 
+            LEFT JOIN descatalogado d ON d.idlibro = l.id
+            WHERE d.idlibro IS NULL";
+
+    return (int)$PDO->query($sql)->fetchColumn();
+}
+
+function countLibrosUsuario(): int
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        return 0;
+    }
+
+    $sql = "SELECT COUNT(DISTINCT l.id)
+            FROM libro l
+            LEFT JOIN descatalogado d ON d.idlibro = l.id
+            LEFT JOIN historiallibro h ON h.idlibro = l.id AND h.fechaentrega IS NULL
+            WHERE d.idlibro IS NULL
+            AND h.idlibro IS NULL";
+
+    return (int)$PDO->query($sql)->fetchColumn();
 }

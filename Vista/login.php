@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST["registrar"])) {
-    require_once __DIR__ . "/../Controlador/usuario-controller.php";
+    require_once __DIR__ . "/../controlador/usuario-controller.php";
 
 
     if (isset($_POST["contrasena"])) {
@@ -52,7 +52,7 @@ if (isset($_POST["registrar"])) {
         </form>
 
         <div class="crear-usuario">
-            <a href="/Vista/formularios/crear-usuario.php" class="link-texto">
+            <a href="/vista/formularios/usuario.php" class="link-texto">
                 Crear usuario
             </a>
         </div>

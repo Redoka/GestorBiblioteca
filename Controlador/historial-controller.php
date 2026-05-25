@@ -1,9 +1,9 @@
 
 <?php
 require_once("baseDatos.php");
-require_once __DIR__ . "/../Modelo/historialLibro.php";
+require_once __DIR__ . "/../modelo/historialLibro.php";
 
-function getHistorial(): array
+function getHistorial(int $limit, int $offset): array
 {
     $historial = array();
     $bdd = "biblioteca";
@@ -20,7 +20,8 @@ function getHistorial(): array
                        hl.fechaentrega AS fechaEntrega
                 FROM `libro` l 
                 Inner join historiallibro hl ON hl.idlibro = l.id
-                INNER JOIN usuario u ON u.id = hl.idusuario";
+                INNER JOIN usuario u ON u.id = hl.idusuario
+                LIMIT {$limit} OFFSET {$offset}";
         $stmt = $PDO->query($sql);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $historial = [];
@@ -35,7 +36,7 @@ function getHistorial(): array
     return $historial;
 }
 
-function getHistorialByIdUsuario(int $id): array
+function getHistorialByIdUsuario(int $id, int $limit, int $offset): array
 {
     $historial = array();
     $bdd = "biblioteca";
@@ -50,10 +51,11 @@ function getHistorialByIdUsuario(int $id): array
                         u.nombre AS nombreUsuario,
                         hl.fechaprestamo AS fechaPrestamo,
                         hl.fechaentrega AS fechaEntrega 
-                FROM `libro` l 
+                FROM libro l 
                 Inner join historiallibro hl ON hl.idlibro = l.id
                 INNER JOIN usuario u ON u.id = hl.idusuario
-                where hl.idusuario = {$id}";
+                where hl.idusuario = {$id}
+                LIMIT {$limit} OFFSET {$offset}";
         $stmt = $PDO->query($sql);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $historial = [];
@@ -158,9 +160,7 @@ function mapHistorial(array $row): historialLibro
 {
     $id = $row['id'];
     // crear libro
-    $libro = new libro();
-    $libro->id = $row['idLibro'];
-    $libro->titulo = $row['titulo'];
+    $libro = new libro($row['idLibro'], 0, $row['titulo'], "", new DateTime(), "");
 
     // crear usuario
     $usuario = new usuario();
@@ -179,5 +179,36 @@ function mapHistorial(array $row): historialLibro
         $fechaPrestamo,
         $fechaEntrega
     );
+}
+
+function countHistorial(): int
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        return 0;
+    }
+
+    $sql = "SELECT COUNT(*) FROM historiallibro";
+
+    return (int)$PDO->query($sql)->fetchColumn();
+}
+
+function countHistorialUsuario(int $id): int
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        return 0;
+    }
+
+    $sql = "SELECT COUNT(*) FROM  libro l 
+            INNER JOIN historiallibro hl ON hl.idlibro = l.id
+            INNER JOIN usuario u ON u.id = hl.idusuario
+            WHERE hl.idusuario = {$id}";
+
+    return (int)$PDO->query($sql)->fetchColumn();
 }
 ?>

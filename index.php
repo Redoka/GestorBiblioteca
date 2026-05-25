@@ -1,19 +1,19 @@
 <?php
 if (!isset($_POST["usuario"])) {
-  header("Location: /Vista/login.php");
+  header("Location: /vista/login.php");
   exit;
 }
 
-require("Controlador/usuario-controller.php");
+require("controlador/usuario-controller.php");
 $admin = false;
 if (getLogin($_POST)) {
-  require_once "Modelo/usuario.php";
+  require_once "modelo/usuario.php";
   session_start();
   $usuario = getUsuarioByLogin($_POST);
   $_SESSION['usuario'] = serialize($usuario);
   $admin = $usuario->tipoUsuario == 1;
 } else {
-  header("Location: /Vista/login.php");
+  header("Location: /vista/login.php");
   exit;
 }
 ?>
@@ -32,14 +32,15 @@ if (getLogin($_POST)) {
   <div class="menu">
     <h1>Menú principal</h1>
 
-    <a href="Vista/tablas/tabla-historial.php">Historial</a>
-    <a href="Vista/tablas/tabla-libro.php">Libros</a>
-    <a href="Vista/fichas/ficha-usuario.php">Mi usuario</a>
+    <a href="vista/tablas/historial.php">Historial</a>
+    <a href="vista/tablas/libros.php">Libros</a>
     <?php
     if ($admin) {
-      echo "<a href='Vista/tablas/tabla-usuario.php'>Usuarios</a>";
+      echo "<a href='vista/tablas/descatalogado.php'>Descatalogados</a>";
+      echo "<a href='vista/tablas/usuarios.php'>Usuarios</a>";
     }
     ?>
+    <a href="vista/fichas/usuario.php">Mi usuario</a>
   </div>
 
 </body>

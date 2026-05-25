@@ -1,5 +1,5 @@
 <?php
-
+require_once("categoria.php");
 class libro
 {
     public int $id;
@@ -8,6 +8,7 @@ class libro
     public string $autor;
     public DateTime $fechaDePublicacion;
     public ?string $descripcion;
+    public array $categorias;
 
     public function __construct(int $id, int $isbn, string $titulo, string $autor, DateTime $fechaDePublicacion, ?string $descripcion)
     {
@@ -17,6 +18,7 @@ class libro
         $this->autor = $autor;
         $this->fechaDePublicacion = $fechaDePublicacion;
         $this->descripcion = $descripcion;
+        $this->categorias = [];
     }
 
     public static function crear(int $id, string $isbn, string $titulo, string $autor, string $fecha, string $descripcion): Libro

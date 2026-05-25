@@ -1,6 +1,6 @@
 
 <?php
-require_once __DIR__ . "/../Modelo/libro.php";
+require_once __DIR__ . "/../modelo/libro.php";
 class descatalogado
 {
     public int $id;

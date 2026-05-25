@@ -1,10 +1,10 @@
 <?php
 require_once("baseDatos.php");
-require_once __DIR__ . "/../Modelo/usuario.php";
+require_once __DIR__ . "/../modelo/usuario.php";
 
 
 
-function getUsuarios(): array
+function getUsuarios(int $limit, int $offset): array
 {
     $usuarios = [];
     $bdd = "biblioteca";
@@ -17,7 +17,7 @@ function getUsuarios(): array
 
     $sql = "SELECT id, dni, nombre, telefono, domicilio, email, usuario, contraseña, 
                    fechanacimiento, tipousuario as tipoUsuario 
-            FROM usuario";
+            FROM usuario LIMIT {$limit} OFFSET {$offset}";
 
     $stmt = $PDO->query($sql);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -255,4 +255,18 @@ function updateUsuario($post): bool
     ]);
 
     return $ok;
+}
+
+function countUsuarios(): int
+{
+    $bdd = "biblioteca";
+    $PDO = conectarDB($bdd);
+
+    if (is_null($PDO)) {
+        return 0;
+    }
+
+    $sql = "SELECT COUNT(*) FROM usuario";
+
+    return (int)$PDO->query($sql)->fetchColumn();
 }
